@@ -6,13 +6,17 @@
 }
 
 .favorable {
-    color: lightgreen;
+    background-color: lightgreen;
+    padding: 5px 5px 5px 5px;
 }
   
 .moderate {
-    color: rgb(238, 238, 132);
+    background-color: rgb(238, 238, 132);
+    padding: 5px 5px 5px 5px;
 }
   
 .severe {
-    color: rgb(230, 55, 55);
+    background-color: rgb(230, 55, 55);
+    padding: 5px 5px 5px 5px;
+    color: white;
 }

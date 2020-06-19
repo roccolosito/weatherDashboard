@@ -8,7 +8,6 @@ $(document).ready(function () {
         // $(".list-group").prepend($("<button>").addClass("list-group-item").text(city));
         todaysWeather(city);
         setNextFiveDaysForecast(city);
-        console.log(setNextFiveDaysForecast);
     });
 
     // Function to retrieve and set current weather for city
@@ -28,11 +27,12 @@ $(document).ready(function () {
             var weatherImage = $("<img>").attr("src", "http://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png");
             var currentTemp = $("<p>").text("Temperature: " + (tempConvertK2F(response.main.temp) + " °F"));
             var humidity = $("<p>").text("Humidity: " + (response.main.humidity));
-            var uvIndex = $("span").text(getUVIndex(response.coord.lat, response.coord.lon));
+            // var uvIndex = $("span").text(getUVIndex(response.value));
+            var coord = '?lat=' + response.coord.lat + '&lon=' + response.coord.lon;
 
             // Empty the contents of the 'today' div, append the new weather data
             $("#today").empty();
-            $("#today").append(cityName, todaysDate, weatherImage, currentTemp, humidity, uvIndex);
+            $("#today").append(cityName, todaysDate, weatherImage, currentTemp, humidity, getUVIndex(coord));
 
         })
     }
@@ -57,8 +57,9 @@ $(document).ready(function () {
         });
     }
 
-    function getUVIndex(lat, lon) {
-        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=85a681bb50b1efa62965db606c2a91cd" + lat + lon;
+    function getUVIndex(location) {
+        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi" + location + "&appid=85a681bb50b1efa62965db606c2a91cd";
+        // var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=85a681bb50b1efa62965db606c2a91cd" + lat + lon;
         // var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?q=" + lat + lon + "&appid=85a681bb50b1efa62965db606c2a91cd";
         $.ajax({
             url: uvUrl,
@@ -73,9 +74,9 @@ $(document).ready(function () {
             span.text(uvIndex);
             p.append("UV Index: ").append(span);
             $("#today").append(p);
-            if(uvIndex >= 3){
+            if(3 >= uvIndex){
                 span.addClass("favorable");
-            } else if (uvIndex >= 6){
+            } else if (6 >= uvIndex){
                 span.addClass("moderate");
             } else {
                 span.addClass("severe");
