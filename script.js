@@ -1,7 +1,15 @@
 $(document).ready(function () {
 
-    // var fiveDayUrl = "https://api.openweathermap.org/data/2.5/forecast?APPID=" + apiKey;
-    // var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?APPID=" + apiKey;
+    $('#search-button').click(function (e) {
+        console.log('button clicked');
+        event.preventDefault();
+        var city = $("#search-value").val().trim();
+        localStorage.setItem("lastCity", city);
+        // $(".list-group").prepend($("<button>").addClass("list-group-item").text(city));
+        todaysWeather(city);
+        setNextFiveDaysForecast(city);
+        console.log(setNextFiveDaysForecast);
+    });
 
     // Function to retrieve and set current weather for city
     function todaysWeather(city) {
@@ -18,8 +26,8 @@ $(document).ready(function () {
             console.log(cityName);
             var todaysDate = moment().format('LL');
             var weatherImage = $("<img>").attr("src", "http://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png");
-            var currentTemp = $("<p>").text(tempConvertK2F(response.main.temp) + " °F");
-            var humidity = $("<p>").text(response.main.humidity);
+            var currentTemp = $("<p>").text("Temperature: " + (tempConvertK2F(response.main.temp) + " °F"));
+            var humidity = $("<p>").text("Humidity: " + (response.main.humidity));
             var uvIndex = $("span").text(getUVIndex(response.coord.lat, response.coord.lon));
 
             // Empty the contents of the 'today' div, append the new weather data
@@ -33,18 +41,25 @@ $(document).ready(function () {
         return (((parseFloat(kelvin) - 273.15) * (9 / 5)) + 32).toFixed(1);
     }
 
-    $('#search-button').click(function (e) {
-        console.log('button clicked');
-        event.preventDefault();
-        var city = $("#search-value").val().trim();
-        localStorage.setItem("lastCity", city);
-        // $(".list-group").prepend($("<button>").addClass("list-group-item").text(city));
-        todaysWeather(city);
-    });
+    function setNextFiveDaysForecast(city){
+
+        var fiveDayUrl = "https://api.openweathermap.org/data/2.5/forecast?APPID=" + city + "&appid=85a681bb50b1efa62965db606c2a91cd";
+        $("#forecastTitle").text("5-Day Forecast:");
+        $.ajax({
+            url: fiveDayUrl,
+            method: "GET"
+        }).then(function(response){
+            var num = 1;
+            for(var i = 4; i < response.list.length; i+=8) {
+                var dayWeather = response.list[i];
+                makeForecastCard(dayWeather, num++);
+            }
+        });
+    }
 
     function getUVIndex(lat, lon) {
-
-        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?q=" + lat + lon + "&appid=85a681bb50b1efa62965db606c2a91cd";
+        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=85a681bb50b1efa62965db606c2a91cd" + lat + lon;
+        // var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?q=" + lat + lon + "&appid=85a681bb50b1efa62965db606c2a91cd";
         $.ajax({
             url: uvUrl,
             method: "GET"
@@ -66,6 +81,21 @@ $(document).ready(function () {
                 span.addClass("severe");
             }
         })
+    }
+
+    function makeForecastCard(dayWeather, cardNum){
+        var header = dayWeather.dt_txt.slice(0, 10);
+        var card = $("#card"+cardNum).empty();
+        card.addClass("card text-white bg-primary mb-3").css("max-width: 18rem");
+        var cardHeader = $("<div>").addClass("card-header").text(header);
+        var cardBody = $("<div>").addClass("card-body");
+        var cardBodyTitle = $("<img>").attr("src", "http://openweathermap.org/img/wn/"+dayWeather.weather[0].icon+".png");
+        var tmpF = kelvinToFarenheit(dayWeather.main.temp);
+        var cardBodyTemp = $("<p>").addClass("card-text").text("Temp: " + tmpF + " °F");
+        var cardBodyHumidity = $("<p>").addClass("card-text").text("Humidity: " + dayWeather.main.humidity + "%");
+        card.append(cardHeader);
+        card.append(cardBody);
+        cardBody.append(cardBodyTitle).append(cardBodyTemp).append(cardBodyHumidity);
     }
 
 })
