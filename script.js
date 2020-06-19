@@ -81,13 +81,13 @@ $(document).ready(function () {
             url: uvUrl,
             method: "GET"
         }).then(function (response) {
-            console.log(response)
+            // console.log(response)
             var uvIndex = parseFloat(response.value).toFixed(2);
             var p = $("<p>");
             var span = $("<span>");
             span.text(uvIndex);
             p.append("UV Index: ").append(span);
-            $("#today").append(p);
+            $("#uv-value").append(p);
             if (3 >= uvIndex) {
                 span.addClass("favorable");
             } else if (6 >= uvIndex) {
