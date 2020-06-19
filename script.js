@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     $('#search-button').click(function (e) {
-        console.log('button clicked');
+        // console.log('button clicked');
         event.preventDefault();
         var city = $("#search-value").val().trim();
         localStorage.setItem("lastCity", city);
@@ -60,13 +60,13 @@ $(document).ready(function () {
     }
 
     function setNextFiveDaysForecast(city) {
-        var fiveDayUrl = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + "&appid=85a681bb50b1efa62965db606c2a91cd" + '&units=imperial';
-
+        var fiveDayUrl = 'https://api.openweathermap.org/data/2.5/forecast?q=' + city + "&appid=85a681bb50b1efa62965db606c2a91cd";
         $("#forecastTitle").text("5-Day Forecast:");
         $.ajax({
             url: fiveDayUrl,
             method: "GET"
         }).then(function (response) {
+            console.log(response);
             var num = 1;
             for (var i = 4; i < response.list.length; i += 8) {
                 var dayWeather = response.list[i];
