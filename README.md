@@ -4,6 +4,6 @@ A weather dashboard that uses the OpenWeather API to source weather data & allow
 
 Link to the deployed app is here: https://roccolosito.github.io/weatherDashboard/
 
-Images of the app's interface are below:
+This is how the Dashboard looks after submitting a search for a city's weather & forecast.
 
-
+![Dashboard](./images/dashboard.png)
