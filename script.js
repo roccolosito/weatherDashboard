@@ -5,10 +5,20 @@ $(document).ready(function () {
         event.preventDefault();
         var city = $("#search-value").val().trim();
         localStorage.setItem("lastCity", city);
-        // $(".list-group").prepend($("<button>").addClass("list-group-item").text(city));
+        $(".list-group").prepend($("<button>").addClass("list-group-item").text(city));
+        displayCityInfo(city);
+    });
+
+    $(document).on("click", ".list-group-item", function () {
+        var city = $(this).text();
+        localStorage.setItem("lastCity", city);
+        displayCityInfo(city);
+    });
+
+    function displayCityInfo(city) {
         todaysWeather(city);
         setNextFiveDaysForecast(city);
-    });
+    }
 
     // Function to retrieve and set current weather for city
     function todaysWeather(city) {
@@ -35,9 +45,14 @@ $(document).ready(function () {
             var currentTemp = $("<p>").attr('class', 'card-text').text("Temperature: " + (tempConvertK2F(response.main.temp) + " °F"));
             var humidity = $("<p>").attr('class', 'card-text').text("Humidity: " + (response.main.humidity));
             var coord = '?lat=' + response.coord.lat + '&lon=' + response.coord.lon;
-            cardBody.append(currentTemp, humidity, getUVIndex(coord));
+            cardBody.append(currentTemp, humidity);
+
+            //Call function to retrieve the UV index
+            getUVIndex(coord);
 
         });
+        //Call function to retrieve 5-Day forecast
+        setNextFiveDaysForecast(city);
     };
 
     function tempConvertK2F(kelvin) {
@@ -45,8 +60,8 @@ $(document).ready(function () {
     }
 
     function setNextFiveDaysForecast(city) {
+        var fiveDayUrl = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + "&appid=85a681bb50b1efa62965db606c2a91cd" + '&units=imperial';
 
-        var fiveDayUrl = "https://api.openweathermap.org/data/2.5/forecast?APPID=" + city + "&appid=85a681bb50b1efa62965db606c2a91cd";
         $("#forecastTitle").text("5-Day Forecast:");
         $.ajax({
             url: fiveDayUrl,
@@ -80,8 +95,8 @@ $(document).ready(function () {
             } else {
                 span.addClass("severe");
             }
-        })
-    }
+        });
+    };
 
     function makeForecastCard(dayWeather, cardNum) {
         var header = dayWeather.dt_txt.slice(0, 10);
@@ -90,12 +105,18 @@ $(document).ready(function () {
         var cardHeader = $("<div>").addClass("card-header").text(header);
         var cardBody = $("<div>").addClass("card-body");
         var cardBodyTitle = $("<img>").attr("src", "http://openweathermap.org/img/wn/" + dayWeather.weather[0].icon + ".png");
-        var tmpF = kelvinToFarenheit(dayWeather.main.temp);
+        var tmpF = tempConvertK2F(dayWeather.main.temp);
         var cardBodyTemp = $("<p>").addClass("card-text").text("Temp: " + tmpF + " °F");
         var cardBodyHumidity = $("<p>").addClass("card-text").text("Humidity: " + dayWeather.main.humidity + "%");
         card.append(cardHeader);
         card.append(cardBody);
         cardBody.append(cardBodyTitle).append(cardBodyTemp).append(cardBodyHumidity);
+    }
+
+    // Retrieve search history for city
+    var lastCity = localStorage.getItem("lastCity");
+    if (lastCity != undefined) {
+        displayCityInfo(lastCity);
     }
 
 })
