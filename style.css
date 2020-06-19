@@ -2,7 +2,11 @@
     float: top;
     border: 1px solid grey;
     padding: 5px 5px 5px 5px;
-    margin-right: 500px;
+    margin-right: 400px;
+}
+
+.todays-date {
+    font-size: 1.5rem;
 }
 
 .favorable {
