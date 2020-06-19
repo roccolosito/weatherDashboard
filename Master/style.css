@@ -4,3 +4,15 @@
     padding: 5px 5px 5px 5px;
     margin-right: 500px;
 }
+
+.favorable {
+    color: lightgreen;
+}
+  
+.moderate {
+    color: rgb(238, 238, 132);
+}
+  
+.severe {
+    color: rgb(230, 55, 55);
+}
